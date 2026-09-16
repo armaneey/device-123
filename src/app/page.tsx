@@ -7,6 +7,8 @@ import DeviceInfo from '@/components/DeviceInfo';
 import ScreenInfo from '@/components/ScreenInfo';
 import NetworkInfo from '@/components/NetworkInfo';
 import LocationInfo from '@/components/LocationInfo';
+import ExtendedHardware from '@/components/ExtendedHardware';
+import BrowserCapabilities from '@/components/BrowserCapabilities';
 
 export default function Home() {
   return (
@@ -23,6 +25,8 @@ export default function Home() {
           <ScreenInfo />
           <NetworkInfo />
           <LocationInfo />
+          <ExtendedHardware />
+          <BrowserCapabilities />
         </div>
       </main>
       
