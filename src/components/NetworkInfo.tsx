@@ -5,14 +5,14 @@ import { Wifi, Signal, Activity, Database } from 'lucide-react';
 import { useDeviceInfo } from '@/hooks/useDeviceInfo';
 
 export default function NetworkInfo() {
-  const { 
-    connectionType, 
-    effectiveConnectionType, 
-    downlink, 
-    rtt, 
-    saveData, 
+  const {
+    connectionType,
+    effectiveConnectionType,
+    downlink,
+    rtt,
+    saveData,
     networkAvailable,
-    isLoading 
+    isLoading,
   } = useDeviceInfo();
 
   const formatDownlink = () => {
@@ -31,67 +31,98 @@ export default function NetworkInfo() {
   };
 
   return (
-    <div className="rounded-2xl border border-[#251D33] bg-[#1A1428] p-6 shadow-xl flex flex-col justify-between">
-      <div className="flex items-center gap-3 border-b border-[#251D33] pb-4 mb-4">
-        <div className="p-2 rounded-lg bg-[#231A35] border border-[#322648] text-[#E6C5B8]">
+    <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-card)] p-6 shadow-xl flex flex-col justify-between">
+
+      <div className="flex items-center gap-3 border-b border-[var(--border-color)] pb-4 mb-4">
+        <div className="p-2 rounded-lg bg-[var(--bg-icon)] border border-[var(--border-color)] text-[var(--accent-color)]">
           <Wifi className="w-5 h-5" />
         </div>
+
         <div>
-          <h2 className="text-sm font-bold uppercase tracking-wider text-[#F5EFE6]">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text-main)]">
             Network Diagnostics
           </h2>
-          <p className="text-[11px] text-[#9A8EA9]">Connection performance and transfer metrics</p>
+
+          <p className="text-[11px] text-[var(--text-muted)]">
+            Connection performance and transfer metrics
+          </p>
         </div>
       </div>
-      <div className="divide-y divide-[#251D33] text-xs">
+
+      <div className="divide-y divide-[var(--border-color)] text-xs">
+
         <div className="flex items-center justify-between py-3">
-          <div className="flex items-center gap-2 text-[#9A8EA9]">
+          <div className="flex items-center gap-2 text-[var(--text-muted)]">
             <Wifi className="w-3.5 h-3.5" />
             <span>Connection Type</span>
           </div>
-          <span className="font-mono text-[#F5EFE6] bg-[#231A35] px-2.5 py-1 rounded-md border border-[#322648]">
-            {isLoading ? 'Loading...' : networkAvailable ? connectionType || 'N/A' : 'Unsupported Browser'}
+
+          <span className="font-mono text-[var(--text-main)] bg-[var(--bg-icon)] px-2.5 py-1 rounded-md border border-[var(--border-color)]">
+            {isLoading
+              ? 'Loading...'
+              : networkAvailable
+                ? connectionType || 'N/A'
+                : 'Unsupported Browser'}
           </span>
         </div>
 
-       
         <div className="flex items-center justify-between py-3">
-          <div className="flex items-center gap-2 text-[#9A8EA9]">
+          <div className="flex items-center gap-2 text-[var(--text-muted)]">
             <Signal className="w-3.5 h-3.5" />
             <span>Effective Speed Class</span>
           </div>
-          <span className="font-mono text-[#E6C5B8] uppercase">
-            {isLoading ? 'Loading...' : networkAvailable ? effectiveConnectionType || 'N/A' : 'Unsupported Browser'}
+
+          <span className="font-mono text-[var(--accent-color)] uppercase">
+            {isLoading
+              ? 'Loading...'
+              : networkAvailable
+                ? effectiveConnectionType || 'N/A'
+                : 'Unsupported Browser'}
           </span>
         </div>
 
-
         <div className="flex items-center justify-between py-3">
-          <div className="flex items-center gap-2 text-[#9A8EA9]">
+          <div className="flex items-center gap-2 text-[var(--text-muted)]">
             <Activity className="w-3.5 h-3.5" />
             <span>Downlink Speed</span>
           </div>
-          <span className="font-mono text-[#F5EFE6]">
-            {isLoading ? 'Loading...' : networkAvailable ? formatDownlink() : 'Unsupported Browser'}
+
+          <span className="font-mono text-[var(--text-main)]">
+            {isLoading
+              ? 'Loading...'
+              : networkAvailable
+                ? formatDownlink()
+                : 'Unsupported Browser'}
           </span>
         </div>
 
         <div className="flex items-center justify-between py-3">
-          <div className="flex items-center gap-2 text-[#9A8EA9]">
+          <div className="flex items-center gap-2 text-[var(--text-muted)]">
             <Activity className="w-3.5 h-3.5" />
             <span>Round Trip Time (RTT)</span>
           </div>
-          <span className="font-mono text-[#F5EFE6]">
-            {isLoading ? 'Loading...' : networkAvailable ? formatRtt() : 'Unsupported Browser'}
+
+          <span className="font-mono text-[var(--text-main)]">
+            {isLoading
+              ? 'Loading...'
+              : networkAvailable
+                ? formatRtt()
+                : 'Unsupported Browser'}
           </span>
         </div>
+
         <div className="flex items-center justify-between py-3">
-          <div className="flex items-center gap-2 text-[#9A8EA9]">
+          <div className="flex items-center gap-2 text-[var(--text-muted)]">
             <Database className="w-3.5 h-3.5" />
             <span>Data Saver Mode</span>
           </div>
-          <span className="font-mono text-[#F5EFE6]">
-            {isLoading ? 'Loading...' : networkAvailable ? formatBoolean(saveData) : 'Unsupported Browser'}
+
+          <span className="font-mono text-[var(--text-main)]">
+            {isLoading
+              ? 'Loading...'
+              : networkAvailable
+                ? formatBoolean(saveData)
+                : 'Unsupported Browser'}
           </span>
         </div>
 

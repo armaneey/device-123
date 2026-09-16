@@ -10,6 +10,7 @@ import LocationInfo from '@/components/LocationInfo';
 import ExtendedHardware from '@/components/ExtendedHardware';
 import BrowserCapabilities from '@/components/BrowserCapabilities';
 
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-[#120E1D] text-[#F5EFE6] antialiased selection:bg-[#E6C5B8]/20 selection:text-[#E6C5B8]">

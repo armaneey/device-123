@@ -11,9 +11,18 @@ interface InfoRowProps {
   showCopy?: boolean;
 }
 
-export default function InfoRow({ label, value, icon, className = '', showCopy = false }: InfoRowProps) {
+export default function InfoRow({
+  label,
+  value,
+  icon,
+  className = '',
+  showCopy = false,
+}: InfoRowProps) {
   const [copied, setCopied] = useState(false);
-  const displayValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value);
+
+  const displayValue =
+    typeof value === 'boolean' ? (value ? 'Yes' : 'No') : String(value);
+
   const valueStr = String(displayValue);
   const isLongValue = valueStr.length > 30;
 
@@ -28,26 +37,43 @@ export default function InfoRow({ label, value, icon, className = '', showCopy =
   };
 
   return (
-    <div className={`flex items-start justify-between py-3 border-b border-[#262630] last:border-0 hover:bg-[#1A1A24] transition-colors rounded-lg px-2 -mx-2 ${className}`}>
+    <div
+      className={`flex items-start justify-between py-3 border-b border-[var(--border-color)] last:border-0 hover:bg-[var(--bg-button-hover)] transition-colors rounded-lg px-2 -mx-2 ${className}`}
+    >
       <div className="flex items-center gap-2 min-w-0 flex-1">
-        {icon && <div className="text-slate-500 flex-shrink-0">{icon}</div>}
-        <span className="text-sm font-medium text-slate-400">{label}</span>
+        {icon && (
+          <div className="text-[var(--text-muted)] flex-shrink-0">
+            {icon}
+          </div>
+        )}
+
+        <span className="text-sm font-medium text-[var(--text-muted)]">
+          {label}
+        </span>
       </div>
+
       <div className="flex items-center gap-2">
-        <span className={`text-sm font-mono text-right truncate max-w-[200px] sm:max-w-xs ${
-          isLongValue 
-            ? 'bg-[#20202B] text-slate-200 px-2.5 py-1 text-xs rounded-md border border-white/5' 
-            : 'text-slate-200'
-        }`}>
+        <span
+          className={`text-sm font-mono text-right truncate max-w-[200px] sm:max-w-xs ${
+            isLongValue
+              ? 'bg-[var(--bg-input)] text-[var(--text-main)] px-2.5 py-1 text-xs rounded-md border border-[var(--border-color)]'
+              : 'text-[var(--text-main)]'
+          }`}
+        >
           {displayValue}
         </span>
+
         {showCopy && isLongValue && (
           <button
             onClick={handleCopy}
-            className="text-slate-500 hover:text-rose-300 transition-colors flex-shrink-0"
+            className="text-[var(--text-muted)] hover:text-[var(--accent-color)] transition-colors flex-shrink-0"
             title="Copy to clipboard"
           >
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            {copied ? (
+              <Check className="w-4 h-4 text-emerald-400" />
+            ) : (
+              <Copy className="w-4 h-4" />
+            )}
           </button>
         )}
       </div>

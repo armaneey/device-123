@@ -1,126 +1,131 @@
 'use client';
 
-import React, { useSyncExternalStore } from 'react';
-import { MapPin, ShieldAlert, Map } from 'lucide-react';
-import { useDeviceInfo } from '@/hooks/useDeviceInfo';
+import React, { useState, useEffect } from 'react';
+import { MapPin, RefreshCw, ExternalLink } from 'lucide-react';
 
 export default function LocationInfo() {
-  const { 
-    locationPermission, 
-    latitude, 
-    longitude, 
-    locationError, 
-    requestLocation,
-    isLoading 
-  } = useDeviceInfo();
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [address, setAddress] = useState<string>('Fetching location details...');
+  const [status, setStatus] = useState<'Granted' | 'Denied' | 'Prompt' | 'Loading'>('Loading');
 
-  // Keep the server snapshot stable while reading the browser API on the client.
-  const isGeolocationSupported = useSyncExternalStore(
-    () => () => {},
-    () => typeof navigator !== 'undefined' && 'geolocation' in navigator,
-    () => true,
-  );
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      setStatus('Denied');
+      setAddress('Geolocation is not supported by your browser.');
+      return;
+    }
 
-  const formatPermissionStatus = () => {
-    if (locationPermission === 'granted') return 'Granted';
-    if (locationPermission === 'denied') return 'Denied';
-    if (locationPermission === 'prompt') return 'Prompt Needed';
-    if (locationPermission === 'unknown') return 'Unknown';
-    return locationPermission || 'N/A';
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        setCoords({ lat: latitude, lng: longitude });
+        setStatus('Granted');
+
+        // Reverse Geocoding via OpenStreetMap Nominatim API
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+          );
+          const data = await res.json();
+          if (data && data.display_name) {
+            setAddress(data.display_name);
+          } else {
+            setAddress('Address lookup unavailable');
+          }
+        } catch {
+          setAddress('Failed to fetch address');
+        }
+      },
+      () => {
+        setStatus('Denied');
+        setAddress('Location access denied.');
+      }
+    );
   };
 
-  const formatCoordinates = (value: number | null) => {
-    if (value === null || value === undefined) return '--';
-    return value.toFixed(6);
-  };
+  useEffect(() => {
+    const timeoutId = window.setTimeout(getLocation, 0);
 
-  const hasCoordinates = latitude !== null && longitude !== null;
+    return () => window.clearTimeout(timeoutId);
+  }, []);
 
   return (
-    <div className="rounded-2xl border border-[#251D33] bg-[#1A1428] p-6 shadow-xl flex flex-col justify-between">
+    <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-card)] p-6 shadow-xl flex flex-col justify-between">
       <div>
-        <div className="flex items-center gap-3 border-b border-[#251D33] pb-4 mb-4">
-          <div className="p-2 rounded-lg bg-[#231A35] border border-[#322648] text-[#E6C5B8]">
-            <MapPin className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-sm font-bold uppercase tracking-wider text-[#F5EFE6]">
-              Geolocation Data
-            </h2>
-            <p className="text-[11px] text-[#9A8EA9]">Device location permissions & coordinates</p>
-          </div>
-        </div>
-
-        <div className="divide-y divide-[#251D33] text-xs">
-          <div className="flex items-center justify-between py-3">
-            <div className="flex items-center gap-2 text-[#9A8EA9]">
-              <ShieldAlert className="w-3.5 h-3.5" />
-              <span>Permission Status</span>
+        <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-4 mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-[var(--bg-icon)] text-[var(--accent-color)]">
+              <MapPin className="w-5 h-5" />
             </div>
-            <span className={`font-mono text-xs font-semibold ${
-              locationPermission === 'granted' 
-                ? 'text-emerald-400' 
-                : locationPermission === 'denied' 
-                ? 'text-rose-400' 
-                : 'text-[#E6C5B8]'
-            }`}>
-              {isLoading ? 'Loading...' : formatPermissionStatus()}
-            </span>
+            <div>
+              <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text-main)]">
+                Geolocation Data
+              </h2>
+              <p className="text-[11px] text-[var(--text-muted)]">Device location permissions & coordinates</p>
+            </div>
           </div>
+          <span className={`text-xs px-2.5 py-1 rounded-full font-mono ${
+            status === 'Granted' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400'
+          }`}>
+            {status}
+          </span>
+        </div>
 
-          <div className="flex items-center justify-between py-3">
-            <span className="text-[#9A8EA9]">Latitude</span>
-            <span className="font-mono text-[#F5EFE6]">
-              {isLoading ? 'Loading...' : formatCoordinates(latitude)}
-            </span>
+      
+        <div className="grid grid-cols-2 gap-4 mb-4 text-xs font-mono">
+          <div className="bg-[var(--bg-input)] p-3 rounded-xl border border-[var(--border-color)]">
+            <span className="text-[var(--text-muted)] block text-[10px] uppercase">Latitude</span>
+            <span className="text-[var(--text-main)] font-semibold">{coords ? coords.lat.toFixed(6) : 'N/A'}</span>
           </div>
-
-          <div className="flex items-center justify-between py-3">
-            <span className="text-[#9A8EA9]">Longitude</span>
-            <span className="font-mono text-[#F5EFE6]">
-              {isLoading ? 'Loading...' : formatCoordinates(longitude)}
-            </span>
+          <div className="bg-[var(--bg-input)] p-3 rounded-xl border border-[var(--border-color)]">
+            <span className="text-[var(--text-muted)] block text-[10px] uppercase">Longitude</span>
+            <span className="text-[var(--text-main)] font-semibold">{coords ? coords.lng.toFixed(6) : 'N/A'}</span>
           </div>
         </div>
 
-        {locationError && (
-          <div className="mt-3 p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl">
-            <p className="text-xs text-rose-300 font-mono">{locationError}</p>
-          </div>
-        )}
-
-        {hasCoordinates && (
-          <div className="mt-4 overflow-hidden rounded-xl border border-[#322648] bg-[#120E1D] shadow-inner">
+       
+        {coords && (
+          <div className="relative w-full h-56 rounded-xl overflow-hidden border border-[var(--border-color)] mb-4">
             <iframe
               title="Device Location Map"
               width="100%"
-              height="180"
-              className="border-0 opacity-90 hover:opacity-100 transition-opacity"
+              height="100%"
+              style={{ border: 0, pointerEvents: 'auto' }}
               loading="lazy"
-              src={`https://maps.google.com/maps?q=${latitude},${longitude}&z=14&output=embed`}
+              allowFullScreen
+              src={`https://maps.google.com/maps?q=${coords.lat},${coords.lng}&z=15&output=embed`}
             />
           </div>
         )}
+
+        
+        <div className="bg-[var(--bg-input)] p-3 rounded-xl border border-[var(--border-color)] text-xs mb-4">
+          <span className="text-[10px] uppercase font-bold text-[var(--text-muted)] block mb-1">
+            Detected Location Name
+          </span>
+          <p className="text-[var(--text-main)] leading-relaxed font-sans">{address}</p>
+        </div>
       </div>
 
-      <div className="mt-4 pt-4 border-t border-[#251D33]">
-        <button
-          onClick={requestLocation}
-          disabled={!isGeolocationSupported || isLoading}
-          className={`w-full font-medium py-2.5 px-4 rounded-xl text-xs transition-all duration-200 flex items-center justify-center gap-2 shadow-sm ${
-            isGeolocationSupported && !isLoading
-              ? 'bg-[#231A35] hover:bg-[#2F2347] text-[#E6C5B8] border border-[#322648] hover:border-[#42335E] active:scale-[0.99]'
-              : 'bg-[#181224] text-[#9A8EA9]/50 border border-[#251D33] cursor-not-allowed'
-          }`}
-        >
-          <Map className="w-3.5 h-3.5 text-[#E6C5B8]" />
-          {hasCoordinates ? 'Recalibrate Location' : 'Request Location Access'}
-        </button>
 
-        {!isGeolocationSupported && (
-          <p className="text-[11px] text-[#9A8EA9] mt-2 text-center">
-            Geolocation is not supported by this browser
-          </p>
+      <div className="flex gap-2">
+        <button
+          onClick={getLocation}
+          className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[var(--bg-button)] hover:bg-[var(--bg-button-hover)] text-[var(--text-main)] text-xs font-medium transition-colors border border-[var(--border-color)]"
+        >
+          <RefreshCw className="w-3.5 h-3.5" />
+          Recalibrate
+        </button>
+        {coords && (
+          <a
+            href={`https://www.google.com/maps?q=${coords.lat},${coords.lng}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center p-2 rounded-xl bg-[var(--bg-button)] hover:bg-[var(--bg-button-hover)] text-[var(--text-main)] transition-colors border border-[var(--border-color)]"
+            title="Open in Google Maps"
+          >
+            <ExternalLink className="w-4 h-4" />
+          </a>
         )}
       </div>
     </div>

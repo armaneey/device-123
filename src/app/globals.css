@@ -1,26 +1,72 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-main: #0F0A1C;
+  --bg-header: #120E1D;
+  --bg-card: #1A1428;
+  --bg-input: #130E20;
+  --bg-icon: #231A35;
+  --bg-button: #231A35;
+  --bg-button-hover: #2D2244;
+  --border-color: #251D33;
+  --text-main: #F5EFE6;
+  --text-muted: #9A8EA9;
+  --accent-color: #E6C5B8;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg-main: #F8FAFC;
+    --bg-header: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-input: #F1F5F9;
+    --bg-icon: #E2E8F0;
+    --bg-button: #E2E8F0;
+    --bg-button-hover: #CBD5E1;
+    --border-color: #E2E8F0;
+    --text-main: #0F172A;
+    --text-muted: #64748B;
+    --accent-color: #2563EB;
   }
 }
 
+:root[data-theme="dark"] {
+  --bg-main: #0B0813;
+  --bg-header: #0F0B18;
+  --bg-card: #140F20;
+  --bg-input: #0D0916;
+  --bg-icon: #1D162E;
+  --bg-button: #1D162E;
+  --bg-button-hover: #291F40;
+  --border-color: #1F172C;
+  --text-main: #FFFFFF;
+  --text-muted: #8E82A0;
+  --accent-color: #D8B4A6;
+}
+:root[data-theme="light"] {
+  --bg-main: #F8FAFC;
+  --bg-header: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-input: #F1F5F9;
+  --bg-icon: #E2E8F0;
+  --bg-button: #E2E8F0;
+  --bg-button-hover: #CBD5E1;
+  --border-color: #E2E8F0;
+  --text-main: #0F172A;
+  --text-muted: #64748B;
+  --accent-color: #2563EB;
+}
+
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+* {
+  border-color: var(--border-color);
 }
